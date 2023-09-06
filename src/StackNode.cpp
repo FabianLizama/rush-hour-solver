@@ -1,4 +1,4 @@
-#include "StackNode.h"
+#include "../include/StackNode.h"
 
 StackNode::StackNode(State *state)
 {

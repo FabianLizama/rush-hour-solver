@@ -1,4 +1,6 @@
 #pragma once
+
+//Corresponde al nodo del árbol de posibilidades para el algoritmo A*
 class State{
     public:
     int depth; // depth of the state

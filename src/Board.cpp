@@ -1,4 +1,4 @@
-#include "Board.h"
+#include "../include/Board.h"
 
 Board::Board(int width, int height, int initX, int initY, int goalX, int goalY){
     this->width = width;
