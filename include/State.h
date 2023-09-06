@@ -1,6 +1,7 @@
 #pragma once
 
 //Corresponde al nodo del árbol de posibilidades para el algoritmo A*
+//La heurística a utilizar será el número de 
 class State{
     public:
     int depth; // depth of the state

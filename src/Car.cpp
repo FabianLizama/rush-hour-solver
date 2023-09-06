@@ -1,14 +1,14 @@
 #include "../include/Car.h"
 
-
 #define UP 1
 #define LEFT 2
 #define DOWN 3
 #define RIGHT 4
 
-Car::Car(Board *board, int x, int y, int length, int direction){
-    this->board = board;
-    this->id = this->board->lastCarId++;
+Car::Car(){}; // default constructor
+
+Car::Car(int id, int x, int y, int length, int direction){
+    this->id = id;
     this->x = x;
     this->y = y;
     this->length = length;
@@ -31,18 +31,18 @@ bool Car::getDirection(){
     return this->direction;
 };
 
-void Car::move(int direction, int steps){
+void Car::move(int direction){
     if(this->direction == 0){ // horizontal
         if(direction == LEFT){
-            this->x -= steps;
+            this->x--;
         }else if(direction == RIGHT){
-            this->x += steps;
+            this->x++;
         }
     }else{ // vertical
         if(direction == UP){
-            this->y -= steps;
+            this->y--;
         }else if(direction == DOWN){
-            this->y += steps;
+            this->y++;
         }
     }
 }
