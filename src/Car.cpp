@@ -5,14 +5,21 @@
 #define DOWN 3
 #define RIGHT 4
 
-Car::Car(){}; // default constructor
+Car::Car(){
+    this->exists = false;
+}; // default constructor
 
 Car::Car(int id, int x, int y, int length, int direction){
+    this->exists = true;
     this->id = id;
     this->x = x;
     this->y = y;
     this->length = length;
     this->direction = direction;
+};
+
+int Car::getId(){
+    return this->id;
 };
 
 int Car::getX(){

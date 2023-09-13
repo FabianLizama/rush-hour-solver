@@ -15,6 +15,6 @@ Stack.o: src/Stack.cpp include/Stack.h
 
 StackNode.o: src/StackNode.cpp include/StackNode.h
 	g++ -c src/StackNode.cpp
+
 clean:
 	rm *.o main
-

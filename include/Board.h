@@ -6,10 +6,12 @@ class Board{
     int width;
     int height;
     Car **board;
-    int lastCarId; // id of the last car created
     int initX, initY; // initial position of the red car
     int goalX, goalY; // goal position of the red car
 
+    Board(); // default constructor
     Board(int width, int height, int initX, int initY, int goalX, int goalY); // constructor
+    Board readInputFile(std::string filename); // reads the input file and creates the board
     void printBoard();
+    int addCar(Car car);
 };
