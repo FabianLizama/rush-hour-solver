@@ -1,20 +1,20 @@
-main: src/main.cpp State.o Board.o Car.o Stack.o StackNode.o
-	g++ State.o Board.o Car.o src/main.cpp Stack.o StackNode.o -o main
+main: src/main.cpp out/State.o out/Board.o out/Car.o out/Stack.o out/StackNode.o
+	g++ out/State.o out/Board.o out/Car.o src/main.cpp out/Stack.o out/StackNode.o -o main
 
-State.o: src/State.cpp include/State.h
-	g++ -c src/State.cpp
+out/State.o: src/State.cpp include/State.h
+	g++ -c src/State.cpp -o out/State.o
 
-Board.o: src/Board.cpp include/Board.h
-	g++ -c src/Board.cpp
+out/Board.o: src/Board.cpp include/Board.h
+	g++ -c src/Board.cpp -o out/Board.o
 
-Car.o: src/Car.cpp include/Car.h
-	g++ -c src/Car.cpp
+out/Car.o: src/Car.cpp include/Car.h
+	g++ -c src/Car.cpp -o out/Car.o
 
-Stack.o: src/Stack.cpp include/Stack.h
-	g++ -c src/Stack.cpp
+out/Stack.o: src/Stack.cpp include/Stack.h
+	g++ -c src/Stack.cpp -o out/Stack.o
 
-StackNode.o: src/StackNode.cpp include/StackNode.h
-	g++ -c src/StackNode.cpp
+out/StackNode.o: src/StackNode.cpp include/StackNode.h
+	g++ -c src/StackNode.cpp -o out/StackNode.o
 
 clean:
-	rm *.o main
+	rm out/*.o main
