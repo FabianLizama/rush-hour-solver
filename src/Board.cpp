@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include "../include/Board.h"
+#include "../include/State.h"
 
 using namespace std;
 
@@ -121,4 +122,10 @@ int Board::addCar(Car car){
     // Se agrega el auto
     this->board[car.getY()][car.getX()] = car;
     return 0;
+};
+
+bool Board::solve(){
+    // Se crea el estado inicial
+    State initState = State(0, 0, -1, 0, 0, nullptr);
+    return true;
 };

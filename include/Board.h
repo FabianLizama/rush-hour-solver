@@ -3,8 +3,8 @@
 
 class Board{
     public:
-    int width;
-    int height;
+    int width = 6;
+    int height = 6;
     Car **board;
     int initX, initY; // initial position of the red car
     int goalX, goalY; // goal position of the red car
@@ -14,4 +14,5 @@ class Board{
     Board readInputFile(std::string filename); // reads the input file and creates the board
     void printBoard();
     int addCar(Car car);
+    bool solve();
 };
