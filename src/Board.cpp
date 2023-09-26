@@ -4,23 +4,14 @@
 #include <string>
 #include "../include/Board.h"
 #include "../include/State.h"
+#include "../include/MinHeap.h"
 
 using namespace std;
 
-Board::Board(){}; // default constructor (does nothing
-
-Board::Board(int width, int height, int initX, int initY, int goalX, int goalY){
-    this->width = width;
-    this->height = height;
-    this->board = new Car*[height];
-    for(int i = 0; i < width; i++){
-        this->board[i] = new Car[width];
-    }
-    
-    this->initX = initX;
-    this->initY = initY;
-    this->goalX = goalX;
-    this->goalY = goalY;
+Board::Board(){
+    // El máximo de autos posibles para un tablero de 6x6 pueden ser 18
+    this->carList = new Car[18];
+    this->carListSize = 0;
 };
 
 Board Board::readInputFile(std::string filename){
@@ -39,29 +30,20 @@ Board Board::readInputFile(std::string filename){
         throw std::runtime_error("Error al abrir el archivo");
     }
     std::string line;
-    // Se obtiene el tamaño del tablero
-    std::getline(file, line);
-    int width = line[0] - '0';
-    int height = line[2] - '0';
 
-    // Se obtiene la salida
-    std::getline(file, line);
-    int goalX = line[0] - '0';
-    int goalY = line[2] - '0';
-
+    // Se crea el tablero
+    Board board = Board();
     // Se obtiene el auto rojo
     std::getline(file, line);
     Car redCar = Car(0, line[0]-'0', line[2]-'0', line[4]-'0', line[6]-'0');
 
     // Se crea el tablero y se añade el auto rojo
-    Board board = Board(width, height, line[0]-'0', line[1]-'0', goalX, goalY);
     board.addCar(redCar);
     int counter = 1;
     while (std::getline(file, line)){
         // Se lee una línea del archivo y se crea el auto correspondiente
         Car car = Car(counter, line[0]-'0', line[2]-'0', line[4]-'0', line[6]-'0');
         board.addCar(car);
-
         counter++;
     }
     file.close();
@@ -83,23 +65,22 @@ void Board::printBoard(){
         }
     }
 
-    for(int y = 0; y < this->height; y++){
-        for(int x = 0; x < this->width; x++){
-            // Si existe un auto en la casilla
-            if(this->board[y][x].exists){
-                graphicBoard[y][x] = this->board[y][x].id + '0';
-                
-                if(this->board[y][x].getDirection() == 0){ // Si el auto es horizontal
-                    for(int k = 1; k < this->board[y][x].getLength(); k++){ // Se dibuja el resto del auto
-                        graphicBoard[y][x+k] = this->board[y][x].id + '0';
-                    }
-                }else{ // Si el auto es vertical
-                    if(y==5 && x==4){
-                    }
-                    for(int k = 1; k < this->board[y][x].getLength(); k++){ // Se dibuja el resto del auto
-                        graphicBoard[y+k][x] = this->board[y][x].id+'0';
-                    }
-                }
+    // Se rellena la matriz con los autos
+    for(int i=0; i<this->carListSize; i++){
+        Car car = this->carList[i];
+        // Si es horizontal
+        if (car.getDirection() == 0){
+            // Se recorre el largo del auto
+            for(int j=0; j<car.getLength(); j++){
+                // Se agrega el id del auto a la matriz
+                graphicBoard[car.getY()][car.getX()+j] = car.getId()+'0';
+            }
+        // Si es vertical
+        } else if (car.getDirection() == 1){
+            // Se recorre el largo del auto
+            for(int j=0; j<car.getLength(); j++){
+                // Se agrega el id del auto a la matriz
+                graphicBoard[car.getY()+j][car.getX()] = car.getId()+'0';
             }
         }
     }
@@ -113,19 +94,24 @@ void Board::printBoard(){
     }
 };
 
-int Board::addCar(Car car){
+bool Board::addCar(Car car){
     // Se revisa que el auto no se salga del tablero
     if (car.getX() < 0 || car.getX() >= this->width || car.getY() < 0 || car.getY() >= this->height){
         cout << "Error: car out of bounds" << endl;
-        return 1;
+        return false;
     }
-    // Se agrega el auto
-    this->board[car.getY()][car.getX()] = car;
-    return 0;
+    
+    // Se agrega el auto a la lista de autos
+    this->carList[car.getId()] = car;
+    this->carListSize++;
+    return true;
 };
 
-bool Board::solve(){
+Board Board::solve(){
     // Se crea el estado inicial
-    State initState = State(0, 0, -1, 0, 0, nullptr);
-    return true;
+    
+    // Se crea el heap para guardar los estados
+    MinHeap heap = MinHeap(5);
+    return Board();
+
 };
