@@ -109,9 +109,30 @@ bool Board::addCar(Car car){
 
 Board Board::solve(){
     // Se crea el estado inicial
-    
+    State initialState = State(0, 0, 1000000, 0, nullptr, this->carList, this->carListSize);
     // Se crea el heap para guardar los estados
     MinHeap heap = MinHeap(5);
-    return Board();
+    // Se agrega el estado inicial al heap
+    heap.insert(initialState);
+
+    // Se generan los estados
+    State currentState;
+
+    // Para un estado state generamos todos los movimientos posibles
+    // Recorremos la lista de autos
+    for(int currentCar=0; currentCar<currentState.carListSize; currentCar++){
+        // Recorremos las 4 direcciones
+        for(int j=1; j<=4; j++){
+            // Se crea el auto temporal
+            Car tempCar = currentState.carList[currentCar];
+            // Se mueve el auto temporal
+            tempCar.move(j);
+            // Se crea el estado temporal
+            State tempState = State(currentState.id+1, currentState.depth+1, 0, j, &currentState, currentState.carList, currentState.carListSize);
+            // Se agrega el estado temporal al heap
+            heap.insert(tempState);
+        }
+    }
+
 
 };
