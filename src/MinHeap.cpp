@@ -17,13 +17,21 @@ void MinHeap::insert(State state){
     int i = size - 1;
     // Si el padre tiene una heurística mayor, se intercambian
     while(i != 0 && heap[i].parent->heuristic > heap[i].heuristic){
-        // Primero se cambian los padres
+        // Primero se intercambian sus profundidades
+        int tempDepth = heap[i].depth;
+        heap[i].depth = heap[i].parent->depth;
+        heap[i].parent->depth = tempDepth;
+
+        // Luego se cambian los padres
+        State temp =  heap[(i-1)/2];
+
         heap[i].parent = heap[i].parent->parent;
-        heap[i].parent->parent = &heap[i];
+        heap[(i-1)/2].parent = &heap[i];
+
         // Luego su posición en el heap
-        State temp = heap[i];
-        heap[i] = *heap[i].parent;
-        *heap[i].parent = temp;
+        heap[(i-1)/2] = heap[i];
+        heap[i] = temp;
+
         i = (i-1)/2;
     }
 }
