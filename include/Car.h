@@ -4,17 +4,25 @@ class Car{
     public:
     bool exists;
     int id;
-    int x;
-    int y;
+    int* coords;
     int length;
     bool direction; // 0 = horizontal, 1 = vertical
 
+    // Constructores
     Car();
-    Car(int id, int x, int y, int length, int direction); // constructor
+    Car(int id, int* coords, int length, int direction); // constructor
+    
+    // Selectores
     int getId();
-    int getX();
-    int getY();
+    int* getCoords();
     int getLength();
     bool getDirection();
-    void move(int movement);
+    
+    // Modificadores
+    void setCoords(int* coords);
+    void move(int* coords);
+    
+    //Otros
+    int* calcMoveCoords(int movement);
+
 };

@@ -12,9 +12,11 @@ class State{
     State* parent; // pointer to the parent state
     Car* carList; // list of cars in the state
     int carListSize; // size of the list of cars
+    int** carMatrix; // matrix of cars in the state
 
     State();
-    State(int id, int depth, int heuristic, int action, State* parent, Car* carList, int carListSize); // constructor
+    State(int id, int depth, int heuristic, int action, State* parent, Car* carList, int carListSize, int** carMatrix); // constructor
     bool isFinalState(); // checks if the state is the final state
     bool verifyCarMove(int carId, int movement); // checks if the car can move in the given direction
+    int calculateHeuristic(int** carMatrix, int carList, int carListSize); // calculates the heuristic value of the state
 };

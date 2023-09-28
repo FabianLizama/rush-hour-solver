@@ -33,16 +33,54 @@ Board Board::readInputFile(std::string filename){
 
     // Se crea el tablero
     Board board = Board();
-    // Se obtiene el auto rojo
-    std::getline(file, line);
-    Car redCar = Car(0, line[0]-'0', line[2]-'0', line[4]-'0', line[6]-'0');
 
-    // Se crea el tablero y se añade el auto rojo
-    board.addCar(redCar);
-    int counter = 1;
+    // Se lee el archivo línea por línea y se crean los autos
+    int counter = 0;
     while (std::getline(file, line)){
+        int x0 = line[0]-'0';
+        int y0 = line[2]-'0';
+        int length = line[4]-'0';
+        int direction = line[6]-'0';
+        int* coords;
+        if (length == 2){
+            coords = new int[4];
+        }else if (length == 3){
+            coords = new int[6];
+        }
+        // Pares son x e impares son y
+        // X_1
+        coords[0] = line[0] - '0';
+        // Y_1
+        coords[1] = line[2] - '0';
+
         // Se lee una línea del archivo y se crea el auto correspondiente
-        Car car = Car(counter, line[0]-'0', line[2]-'0', line[4]-'0', line[6]-'0');
+        // Si es horizontal
+        if (direction==0){
+            // X_2
+            coords[2] = coords[0]+1;
+            // Y_2
+            coords[3] = coords[1];
+            if(length == 3){
+                // X_3
+                coords[4] = coords[0]+2;
+                // Y_3
+                coords[5] = coords[1];
+            }
+            
+        } else if (direction==1){
+            // X_2
+            coords[2] = coords[0];
+            // Y_2
+            coords[3] = coords[1]+1;
+            if (length == 3){
+                // X_3
+                coords[4] = coords[0];
+                // Y_3
+                coords[5] = coords[1]+2;
+            }
+        }
+
+        Car car = Car(counter, coords, length, direction);
         board.addCar(car);
         counter++;
     }
@@ -73,14 +111,14 @@ void Board::printBoard(){
             // Se recorre el largo del auto
             for(int j=0; j<car.getLength(); j++){
                 // Se agrega el id del auto a la matriz
-                graphicBoard[car.getY()][car.getX()+j] = car.getId()+'0';
+                graphicBoard[car.getCoords()[1]][car.getCoords()[0]+j] = car.getId()+'0';
             }
         // Si es vertical
         } else if (car.getDirection() == 1){
             // Se recorre el largo del auto
             for(int j=0; j<car.getLength(); j++){
                 // Se agrega el id del auto a la matriz
-                graphicBoard[car.getY()+j][car.getX()] = car.getId()+'0';
+                graphicBoard[car.getCoords()[1]+j][car.getCoords()[0]] = car.getId()+'0';
             }
         }
     }
@@ -95,12 +133,6 @@ void Board::printBoard(){
 };
 
 bool Board::addCar(Car car){
-    // Se revisa que el auto no se salga del tablero
-    if (car.getX() < 0 || car.getX() >= this->width || car.getY() < 0 || car.getY() >= this->height){
-        cout << "Error: car out of bounds" << endl;
-        return false;
-    }
-    
     // Se agrega el auto a la lista de autos
     this->carList[car.getId()] = car;
     this->carListSize++;
@@ -108,8 +140,30 @@ bool Board::addCar(Car car){
 };
 
 Board Board::solve(){
+    // Se crea una matriz para representar el tablero
+    int** boardMatrix = new int*[this->height];
+    for(int i = 0; i < this->height; i++){
+        boardMatrix[i] = new int[this->width];
+    }
+    // Se rellena la matriz con -1
+    for(int i = 0; i < this->height; i++){
+        for(int j = 0; j < this->width; j++){
+            boardMatrix[i][j] = -1;
+        }
+    }
+    // Se rellena la matriz con los autos
+    // Se iteran los autos
+    for(int currentCar=0; currentCar<this->carListSize; currentCar++){
+        // Se iteran las coordenadas de los autos
+        for(int coord=0; coord<this->carList[currentCar].getLength(); coord++){
+            int currentX = this->carList[currentCar].getCoords()[coord*2];
+            int currentY = this->carList[currentCar].getCoords()[coord*2+1];
+            boardMatrix[currentY][currentX] = this->carList[currentCar].getId();
+        }
+    }
+
     // Se crea el estado inicial
-    State initialState = State(0, 0, 1000000, 0, nullptr, this->carList, this->carListSize);
+    State initialState = State(0, 0, 1000000, -1, nullptr, this->carList, this->carListSize, boardMatrix);
     // Se crea el heap para guardar los estados
     MinHeap heap = MinHeap(5);
     // Se agrega el estado inicial al heap
@@ -126,13 +180,11 @@ Board Board::solve(){
             // Se crea el auto temporal
             Car tempCar = currentState.carList[currentCar];
             // Se mueve el auto temporal
-            tempCar.move(j);
+            tempCar.move(tempCar.calcMoveCoords(j));
             // Se crea el estado temporal
-            State tempState = State(currentState.id+1, currentState.depth+1, 0, j, &currentState, currentState.carList, currentState.carListSize);
+            State tempState = State(currentState.id+1, currentState.depth+1, 0, j, &currentState, currentState.carList, currentState.carListSize, boardMatrix);
             // Se agrega el estado temporal al heap
             heap.insert(tempState);
         }
     }
-
-
 };

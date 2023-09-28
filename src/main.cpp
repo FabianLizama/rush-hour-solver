@@ -11,7 +11,7 @@ using namespace std;
 int main() {
     Board board = Board();
     try {
-        board = board.readInputFile("todo.txt");
+        board = board.readInputFile("in.txt");
     } catch (const std::runtime_error& e) {
         std::cout << e.what() << std::endl;
         return 1;
