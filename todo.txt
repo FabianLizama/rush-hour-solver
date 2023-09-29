@@ -1,3 +1,4 @@
 [] - Muros
 [] - A*
 [] - Heurística
+[] - Limpiar memoria/Destructores

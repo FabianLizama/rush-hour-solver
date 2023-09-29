@@ -8,9 +8,15 @@ class Board{
     Car* carList; // list of cars
     int carListSize; // size of the list of cars
 
+    // Constructores
     Board(); // default constructor
     Board readInputFile(std::string filename); // reads the input file and creates the board
+    
+    // Modificadores
+    void setCarList(Car* carList);
+
     void printBoard();
     bool addCar(Car car);
     Board solve();
+
 };

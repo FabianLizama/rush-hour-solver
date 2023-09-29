@@ -88,6 +88,9 @@ Board Board::readInputFile(std::string filename){
     return board;
 }
 
+void Board::setCarList(Car* carList){
+    this->carList = carList;
+};
 // Los autos se representan con su id correspondiente, el auto rojo se representa con un 1
 // Las casillas se representan con una x
 void Board::printBoard(){
@@ -163,7 +166,7 @@ Board Board::solve(){
     }
 
     // Se crea el estado inicial
-    State initialState = State(0, 0, 1000000, -1, nullptr, this->carList, this->carListSize, boardMatrix);
+    State initialState = State(0, 0, 1000000, -1, nullptr, this->carList, this->carListSize, boardMatrix, nullptr);
     // Se crea el heap para guardar los estados
     MinHeap heap = MinHeap(5);
     // Se agrega el estado inicial al heap
@@ -179,12 +182,29 @@ Board Board::solve(){
         for(int j=1; j<=4; j++){
             // Se crea el auto temporal
             Car tempCar = currentState.carList[currentCar];
-            // Se mueve el auto temporal
-            tempCar.move(tempCar.calcMoveCoords(j));
-            // Se crea el estado temporal
-            State tempState = State(currentState.id+1, currentState.depth+1, 0, j, &currentState, currentState.carList, currentState.carListSize, boardMatrix);
-            // Se agrega el estado temporal al heap
-            heap.insert(tempState);
+            
+            // Se crea el estado temporal exactamente igual al estado actual
+            State tempState = State(currentState.id+1, currentState.depth+1, 1000000, j, &currentState, currentState.carList, currentState.carListSize, boardMatrix, nullptr);
+
+            // Se verifica si el auto puede moverse en la dirección j
+            if (tempState.verifyCarMove(currentCar, j)){
+                // Se mueve el auto
+                tempCar.move(tempCar.calcMoveCoords(j));
+                // Se actualiza la lista de autos
+                tempState.setCar(tempCar);
+                // Se actualiza la matriz de autos
+                tempState.updateCarMatrix(currentCar);
+                // Se calcula la heurística del estado
+                tempState.calculateHeuristic();
+                // Se agrega el estado temporal al heap
+                heap.insert(tempState);
+                if (tempState.isFinalState()){
+                    this->setCarList(tempState.getCarList());
+                    std::cout << "Se encontró la solución" << std::endl;
+                    tempState.printRoute();
+                    return *this;
+                }
+            }
         }
     }
 };

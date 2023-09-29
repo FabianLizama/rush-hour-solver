@@ -1,5 +1,5 @@
-main: src/main.cpp out/State.o out/Board.o out/Car.o out/Stack.o out/StackNode.o out/MinHeap.o
-	g++ out/State.o out/Board.o out/Car.o src/main.cpp out/Stack.o out/StackNode.o out/MinHeap.o -o main
+main: src/main.cpp out/Queue.o out/State.o out/Board.o out/Car.o out/Stack.o out/StackNode.o out/MinHeap.o
+	g++ out/State.o out/Board.o out/Car.o src/main.cpp out/Stack.o out/StackNode.o out/MinHeap.o out/Queue.o -o main
 
 out/State.o: src/State.cpp include/State.h
 	g++ -c src/State.cpp -o out/State.o
@@ -18,6 +18,9 @@ out/StackNode.o: src/StackNode.cpp include/StackNode.h
 
 out/MinHeap.o: src/MinHeap.cpp include/MinHeap.h
 	g++ -c src/MinHeap.cpp -o out/MinHeap.o
+
+out/Queue.o: src/Queue.cpp include/Queue.h
+	g++ -c src/Queue.cpp -o out/Queue.o
 
 clean:
 	rm out/*.o main

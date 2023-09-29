@@ -1,5 +1,6 @@
 #include "../include/State.h"
 #include "../include/Car.h"
+#include "../include/Queue.h"
 
 #define UP 1
 #define LEFT 2
@@ -8,7 +9,7 @@
 
 State::State(){};
 
-State::State(int id, int depth, int heuristic, int action, State *parent, Car* carList, int carListSize, int** carMatrix){
+State::State(int id, int depth, int heuristic, int action, State *parent, Car* carList, int carListSize, int** carMatrix, char* lastMove){
     this->id = id;
     this->depth = depth;
     this->heuristic = heuristic; 
@@ -17,6 +18,31 @@ State::State(int id, int depth, int heuristic, int action, State *parent, Car* c
     this->carList = carList;
     this->carListSize = carListSize;
     this->carMatrix = carMatrix;
+    this->lastMove = lastMove;
+};
+
+Car* State::getCarList(){
+    return this->carList;
+};
+
+int** State::getCarMatrix(){
+    return this->carMatrix;
+};
+
+int State::getCarListSize(){
+    return this->carListSize;
+};
+
+char* State::getLastMove(){
+    return this->lastMove;
+};
+
+void State::setHeuristic(int heuristic){
+    this->heuristic = heuristic;
+};
+
+void State::setCar(Car car){
+    this->carList[car.getId()] = car;
 };
 
 bool State::isFinalState(){
@@ -52,3 +78,21 @@ bool State::verifyCarMove(int carId, int movement){
     }
     return true;
 };
+
+void State::calculateHeuristic(){
+    // TO-DO
+}
+
+void State::updateCarMatrix(int carId){
+    // TO-DO
+}
+
+void State::printRoute(){
+    Queue route = Queue(4);
+    State* currentState = this;
+    while (currentState->parent != nullptr){
+        route.push(currentState->getLastMove());
+        currentState = currentState->parent;
+    }
+    route.print();
+}
