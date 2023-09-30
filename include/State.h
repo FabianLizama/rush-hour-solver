@@ -32,6 +32,6 @@ class State{
     bool isFinalState(); // checks if the state is the final state
     bool verifyCarMove(int carId, int movement); // checks if the car can move in the given direction
     void calculateHeuristic(); // calculates the heuristic value of the state
-    void updateCarMatrix(int carId); // updates the car matrix of the state
+    void updateCarMatrix(int* oldCoords, int* newCoords); // updates the car matrix of the state
     void printRoute(); // prints the state
 };

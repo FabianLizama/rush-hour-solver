@@ -182,18 +182,21 @@ Board Board::solve(){
         for(int j=1; j<=4; j++){
             // Se crea el auto temporal
             Car tempCar = currentState.carList[currentCar];
+            int* oldCoords = tempCar.getCoords();
             
             // Se crea el estado temporal exactamente igual al estado actual
             State tempState = State(currentState.id+1, currentState.depth+1, 1000000, j, &currentState, currentState.carList, currentState.carListSize, boardMatrix, nullptr);
 
             // Se verifica si el auto puede moverse en la dirección j
             if (tempState.verifyCarMove(currentCar, j)){
+                // Se calculan las coordenadas de llegada del auto
+                int* newCoords = tempCar.calcMoveCoords(j);
                 // Se mueve el auto
-                tempCar.move(tempCar.calcMoveCoords(j));
+                tempCar.move(newCoords);
+                // Se actualiza la matriz de autos
+                tempState.updateCarMatrix(oldCoords, newCoords);
                 // Se actualiza la lista de autos
                 tempState.setCar(tempCar);
-                // Se actualiza la matriz de autos
-                tempState.updateCarMatrix(currentCar);
                 // Se calcula la heurística del estado
                 tempState.calculateHeuristic();
                 // Se agrega el estado temporal al heap

@@ -12,6 +12,9 @@ class Board{
     Board(); // default constructor
     Board readInputFile(std::string filename); // reads the input file and creates the board
     
+    // Selectores
+    Car* getCarList();
+
     // Modificadores
     void setCarList(Car* carList);
 
