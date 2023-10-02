@@ -5,7 +5,6 @@
 #include "../include/Car.h"
 #include "../include/Stack.h"
 
-
 using namespace std;
 
 int main() {

@@ -2,4 +2,4 @@
 [] - A*
 [X] - Heurística
 [X] - Leer auto rojo
-[] - Más de 9 autos
+[X] - Más de 9 autos

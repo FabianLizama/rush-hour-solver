@@ -207,7 +207,12 @@ void Board::printBoard(){
     // Se imprime la matriz
     for(int i = 0; i < this->height; i++){
         for(int j = 0; j < this->width; j++){
-            cout << graphicBoard[i][j] << " ";
+            int character = graphicBoard[i][j];
+            if(character != 120 && character != 35){
+                cout << (char)((int)graphicBoard[i][j]+17) << " ";
+            }else{
+                cout << graphicBoard[i][j] << " ";
+            }
         }
         cout << endl;
     }
