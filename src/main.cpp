@@ -11,11 +11,11 @@ using namespace std;
 int main() {
     Board board = Board();
     try {
-        board = board.readInputFile("in.txt");
+        board.readInputFile("in.txt", "wall1.txt");
+        board.printBoard();
     } catch (const std::runtime_error& e) {
         std::cout << e.what() << std::endl;
         return 1;
     }
-    board.printBoard();
     return 0;
 };

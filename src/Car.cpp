@@ -33,6 +33,10 @@ bool Car::getDirection(){
     return this->direction;
 };
 
+void Car::setId(int id){
+    this->id = id;
+};
+
 void Car::setCoords(int* coords){
     this->coords = coords;
 };

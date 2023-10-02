@@ -7,10 +7,12 @@ class Board{
     int height = 6;
     Car* carList; // list of cars
     int carListSize; // size of the list of cars
+    int** carMatrix; // matrix of cars
+    //char** graphicBoard; // matrix that represents the board
 
     // Constructores
     Board(); // default constructor
-    Board readInputFile(std::string filename); // reads the input file and creates the board
+    void readInputFile(std::string filename, std::string wallFilename); // reads the input file and creates the board
     
     // Selectores
     Car* getCarList();

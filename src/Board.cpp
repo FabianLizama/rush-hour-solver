@@ -12,9 +12,13 @@ Board::Board(){
     // El máximo de autos posibles para un tablero de 6x6 pueden ser 18
     this->carList = new Car[18];
     this->carListSize = 0;
+    this->carMatrix = new int*[this->height];
+    for(int i = 0; i < this->height; i++){
+        this->carMatrix[i] = new int[this->width];
+    }
 };
 
-Board Board::readInputFile(std::string filename){
+void Board::readInputFile(std::string filename, std::string wallFilename){
     // Cada fila es un auto
     // Columna 0 es la posición x
     // Columna 1 es la posición y
@@ -31,12 +35,11 @@ Board Board::readInputFile(std::string filename){
     }
     std::string line;
 
-    // Se crea el tablero
-    Board board = Board();
-
     // Se lee el archivo línea por línea y se crean los autos
-    int counter = 0;
+    int counter = 1;
+    bool redCarFound=false;
     while (std::getline(file, line)){
+        bool thisIsRedCar=false;
         int x0 = line[0]-'0';
         int y0 = line[2]-'0';
         int length = line[4]-'0';
@@ -66,7 +69,14 @@ Board Board::readInputFile(std::string filename){
                 // Y_3
                 coords[5] = coords[1];
             }
-            
+            // Se comprueba si es el auto rojo
+            if(!redCarFound && (y0==2)){
+                    redCarFound=true;
+                    thisIsRedCar=true;
+                    Car car = Car(0, coords, length, direction);
+                    this->addCar(car);
+            }
+        // Si es vertical
         } else if (direction==1){
             // X_2
             coords[2] = coords[0];
@@ -79,13 +89,73 @@ Board Board::readInputFile(std::string filename){
                 coords[5] = coords[1]+2;
             }
         }
-
-        Car car = Car(counter, coords, length, direction);
-        board.addCar(car);
-        counter++;
+        if (!thisIsRedCar){
+            Car car = Car(counter, coords, length, direction);
+            this->addCar(car);
+            counter++;
+        }
     }
     file.close();
-    return board;
+    // Se cuentan los autos horizontales en la tercera fila
+    int horizontalCars=0;
+    Car** horizontalCarList = new Car*[2];
+
+    for(int i=0; i<this->carListSize; i++){
+        if (this->carList[i].getDirection() == 0 && this->carList[i].getCoords()[1] == 2){
+            horizontalCarList[horizontalCars] = &this->carList[i];
+            horizontalCars++;
+        }
+    }
+    if (horizontalCars == 2){
+        // Si hay dos autos horizontales en la fila 2 se identifica el rojo
+        // Si están mal asignados se swapean los ids
+        int xCar1 = horizontalCarList[0]->getCoords()[0];
+        int xCar2 = horizontalCarList[1]->getCoords()[0];
+        // Si el auto 1 está a la izquierda del auto 2 y es el auto rojo, los swapea
+        if(xCar1 < xCar2 && horizontalCarList[0]->getId() == 0){
+            int tempId = horizontalCarList[1]->getId();
+            horizontalCarList[1]->setId(0);
+            horizontalCarList[0]->setId(tempId);
+        } else if (xCar2 < xCar1 && horizontalCarList[1]->getId() == 0){
+            int tempId = horizontalCarList[0]->getId();
+            horizontalCarList[0]->setId(0);
+            horizontalCarList[1]->setId(tempId);
+        }
+    }
+
+    // Se rellena la matriz con -1
+    for(int i = 0; i < this->height; i++){
+        for(int j = 0; j < this->width; j++){
+            this->carMatrix[i][j] = -1;
+        }
+    }
+    // Se rellena la matriz con los autos
+    // Se iteran los autos
+            std::cout << "Hola" << std::endl;
+    for(int currentCar=0; currentCar<this->carListSize; currentCar++){
+        // Se iteran las coordenadas de los autos
+        for(int coord=0; coord<this->carList[currentCar].getLength(); coord++){
+
+            int currentX = this->carList[currentCar].getCoords()[coord*2];
+            int currentY = this->carList[currentCar].getCoords()[coord*2+1];
+            this->carMatrix[currentY][currentX] = this->carList[currentCar].getId();
+        }
+    }
+
+    std::ifstream wallFile(wallFilename);
+    // Se comprueba que el archivo se abrió correctamente
+    if (!wallFile.is_open()){
+        std::cout << "No se pudo abrir el archivo " << wallFilename << std::endl;
+        throw std::runtime_error("Error al abrir el archivo");
+    }
+    // Se lee el archivo línea por línea y se crean los autos
+    while (std::getline(wallFile, line)){
+        int x0 = line[0]-'0';
+        int y0 = line[2]-'0';
+        
+        this->carMatrix[y0][x0] = -2;
+    }
+    wallFile.close();
 }
 
 void Board::setCarList(Car* carList){
@@ -97,12 +167,21 @@ void Board::printBoard(){
     // Se crea una matriz de characters para representar el tablero
     char** graphicBoard = new char*[this->height];
     for(int i = 0; i < this->height; i++){
-        graphicBoard[i] = new char[this->width]();
+        graphicBoard[i] = new char[this->width];
     }
     // Se rellena la matriz con x
     for(int i = 0; i < this->height; i++){
         for(int j = 0; j < this->width; j++){
             graphicBoard[i][j] = 'x';
+        }
+    }
+
+    // Se rellena la matriz con muros
+    for(int i = 0; i < this->height; i++){
+        for(int j = 0; j < this->width; j++){
+            if(this->carMatrix[i][j] == -2){
+                graphicBoard[i][j] = '#';
+            }
         }
     }
 
@@ -143,30 +222,10 @@ bool Board::addCar(Car car){
 };
 
 Board Board::solve(){
-    // Se crea una matriz para representar el tablero
-    int** boardMatrix = new int*[this->height];
-    for(int i = 0; i < this->height; i++){
-        boardMatrix[i] = new int[this->width];
-    }
-    // Se rellena la matriz con -1
-    for(int i = 0; i < this->height; i++){
-        for(int j = 0; j < this->width; j++){
-            boardMatrix[i][j] = -1;
-        }
-    }
-    // Se rellena la matriz con los autos
-    // Se iteran los autos
-    for(int currentCar=0; currentCar<this->carListSize; currentCar++){
-        // Se iteran las coordenadas de los autos
-        for(int coord=0; coord<this->carList[currentCar].getLength(); coord++){
-            int currentX = this->carList[currentCar].getCoords()[coord*2];
-            int currentY = this->carList[currentCar].getCoords()[coord*2+1];
-            boardMatrix[currentY][currentX] = this->carList[currentCar].getId();
-        }
-    }
+    
 
     // Se crea el estado inicial
-    State initialState = State(0, 0, 1000000, -1, nullptr, this->carList, this->carListSize, boardMatrix, nullptr);
+    State initialState = State(0, 0, 1000000, -1, nullptr, this->carList, this->carListSize, this->carMatrix, nullptr);
     // Se crea el heap para guardar los estados
     MinHeap heap = MinHeap(5);
     // Se agrega el estado inicial al heap
@@ -185,7 +244,7 @@ Board Board::solve(){
             int* oldCoords = tempCar.getCoords();
             
             // Se crea el estado temporal exactamente igual al estado actual
-            State tempState = State(currentState.id+1, currentState.depth+1, 1000000, j, &currentState, currentState.carList, currentState.carListSize, boardMatrix, nullptr);
+            State tempState = State(currentState.id+1, currentState.depth+1, 1000000, j, &currentState, currentState.carList, currentState.carListSize, this->carMatrix, nullptr);
 
             // Se verifica si el auto puede moverse en la dirección j
             if (tempState.verifyCarMove(currentCar, j)){
@@ -206,8 +265,12 @@ Board Board::solve(){
                     std::cout << "Se encontró la solución" << std::endl;
                     tempState.printRoute();
                     return *this;
+                } else {
+                    
                 }
             }
         }
     }
+    this->carList = heap.heap[0].getCarList();
+    return *this;
 };

@@ -19,6 +19,7 @@ class Car{
     bool getDirection();
     
     // Modificadores
+    void setId(int id);
     void setCoords(int* coords);
     void move(int* coords);
     
