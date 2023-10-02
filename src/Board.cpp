@@ -131,7 +131,6 @@ void Board::readInputFile(std::string filename, std::string wallFilename){
     }
     // Se rellena la matriz con los autos
     // Se iteran los autos
-            std::cout << "Hola" << std::endl;
     for(int currentCar=0; currentCar<this->carListSize; currentCar++){
         // Se iteran las coordenadas de los autos
         for(int coord=0; coord<this->carList[currentCar].getLength(); coord++){

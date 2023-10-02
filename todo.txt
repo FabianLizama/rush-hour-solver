@@ -1,6 +1,5 @@
 [X] - Muros
 [] - A*
 [X] - Heurística
-[] - Limpiar memoria/Destructores
 [X] - Leer auto rojo
 [] - Más de 9 autos
