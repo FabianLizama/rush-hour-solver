@@ -1,17 +1,14 @@
-#include "State.h"
-#include "StackNode.h"
-
-#pragma once
 
 class Stack {
 public:
-    StackNode *top;
     int height;
+    char** stack;
+    int capacity;
 
     Stack();
     ~Stack();
-    void push(State *state);
-    State *pop();
+    void push(char* state);
+    char* pop();
     bool isEmpty();
     void printStack();
 };

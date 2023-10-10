@@ -1,5 +1,6 @@
 #pragma once
 #include "Car.h"
+#include "State.h"
 
 class Board{
     public:
@@ -21,7 +22,7 @@ class Board{
     void setCarList(Car* carList);
 
     void printBoard();
-    bool addCar(Car car);
-    Board solve();
+    bool addCar(Car* car);
+    State* solve(State* initialState);
 
 };

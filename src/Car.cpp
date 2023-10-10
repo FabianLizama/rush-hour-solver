@@ -45,7 +45,11 @@ void Car::move(int* coords){
     this->setCoords(coords);
 }
 int* Car::calcMoveCoords(int direction){
-    int* tempCoords = this->coords;
+    int* tempCoords = new int[2*this->length];
+    for(int i=0; i<this->length; i++){
+        tempCoords[2*i] = this->coords[2*i]; // x
+        tempCoords[2*i+1] = this->coords[2*i+1]; // y
+    }
     if(this->direction == 0){ // horizontal
         if(direction == LEFT){
             for(int i=0; i<this->length; i++){

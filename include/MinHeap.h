@@ -7,8 +7,18 @@ class MinHeap{
         int capacity;
         int size;
 
+        // Constructores
         MinHeap(int capacity);
-        void insert(State state);
+        // Selectores
+
+        // Modificadores
+        void setSize(int size);
+        void insert(State* state);
+        State* pop();
         void capacityDoubler();
-        bool includes(State state);
+        
+        // Otros
+        bool includes(State* state);
+        bool isEmpty();
+        void printHeap();
 };

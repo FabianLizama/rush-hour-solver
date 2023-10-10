@@ -5,54 +5,48 @@ using namespace std;
 
 Stack::Stack()
 {
-    this->top = nullptr;
     this->height = 0;
+    this->stack = new char*[100];
+    this->capacity = 100;
 };
 
-Stack::~Stack()
-{
-    StackNode *current = this->top;
-    StackNode *next = nullptr;
+Stack::~Stack(){
+    delete[] this->stack;
+};
 
-    while (current != nullptr) {
-        next = current->next;
-        delete current;
-        current = next;
+void Stack::push(char* string){
+    if (this->capacity == this->height){
+        char** newStack = new char*[this->capacity*2];
+        for (int i = 0; i < this->capacity; i++){
+            newStack[i] = this->stack[i];
+        }
+        delete[] this->stack;
+        this->stack = newStack;
+        this->capacity = this->capacity*2;
     }
-};
 
-void Stack::push(State *state){
-    StackNode *newNode = new StackNode(state);
-    newNode->next = this->top;
-    this->top = newNode;
+    this->stack[this->height] = string;
     this->height++;
 };
 
-State *Stack::pop(){
-    if (this->isEmpty()) {
+char* Stack::pop(){
+    if (this->isEmpty()){
         return nullptr;
     }
-    StackNode *topState = this->top;
-    this->top = topState->next;
     this->height--;
-    return topState->state;
+    return this->stack[this->height];
 };
 
 bool Stack::isEmpty(){
-    if (this->top == nullptr){
+    if (this->height == 0){
         return true;
     }
     return false;
 };
 
 void Stack::printStack(){
-    cout << "[";
-    StackNode *actual = this->top;
-    while (actual != nullptr){
-        cout << actual->state->action;
-        if (actual->next != nullptr){
-            cout << ", ";
-        }
+    char* string;
+    while((string = this->pop()) != nullptr){
+        cout << string << endl;
     }
-    cout << "]" << endl;
 };
