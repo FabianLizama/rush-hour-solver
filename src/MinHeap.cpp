@@ -38,10 +38,13 @@ void MinHeap::insert(State* state){
 }
 
 State* MinHeap::pop(){
+    if (this->size == 0){
+        return nullptr;
+    }
     if (this->size == 1){
         setSize(0);
         return &heap[0];
-    } else if (this->size != 0){
+    } else if (this->size > 0){
         State* root = &heap[0];
         heap[0] = heap[size-1];
         
@@ -73,15 +76,20 @@ void MinHeap::capacityDoubler(){
 bool MinHeap::includes(State* state){
     //std::cout << "Estado a comparar: " << std::endl;
     int i=0;
+    if (size == 0){
+        return false;
+    } else if (size == 1){
+        return heap[0].equals(state);
+    }
     //state->printBoard();
     while (i < size){
         //std::cout << "Estado en heap: " << std::endl;
         //heap[i].printBoard();
         if (heap[i].equals(state)){
             return true;
-        } else if (heap[2*i+1].getF() > state->getF()){
+        } else if (this->heap[2*i+1].getF() > state->getF()){
             i = 2*i+2;
-        } else if (heap[2*i+2].getF() > state->getF()){
+        } else if (this->heap[2*i+2].getF() > state->getF()){
             i = 2*i+1;
         } else {
             return false;

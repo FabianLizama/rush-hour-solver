@@ -18,6 +18,7 @@ State::State(int id, int heuristic, int action, Car* carList, int carListSize, i
     this->carListSize = carListSize;
     this->carMatrix = carMatrix;
     this->lastMove = lastMove;
+    this->g = 0;
 };
 
 Car* State::getCarList(){

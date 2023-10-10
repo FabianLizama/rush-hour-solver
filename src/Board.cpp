@@ -313,8 +313,6 @@ State* Board::solve(State *initialState){
                     tempCar->move(newCoords);
                     // Se actualiza la matriz de autos
                     tempState->updateCarMatrix(oldCoords, newCoords, *tempCar);
-                    delete oldCoords;
-                    delete newCoords;
                     // Se actualiza la lista de autos
                     tempState->setCar(*tempCar);
                     tempState->g++;

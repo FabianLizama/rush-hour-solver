@@ -7,7 +7,6 @@
 class State{
     public:
     int g; // costo
-    int h; // heurística
     int id; // id of the state
     int heuristic; // heuristic value of the state
     int action; // action taken to reach this state
