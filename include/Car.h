@@ -25,5 +25,5 @@ class Car{
     
     //Otros
     int* calcMoveCoords(int movement);
-
+    Car* clone();
 };

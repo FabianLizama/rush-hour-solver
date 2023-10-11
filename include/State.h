@@ -9,22 +9,21 @@ class State{
     int g; // costo
     int id; // id of the state
     int heuristic; // heuristic value of the state
+    int carMoved; // id of the car that moved to reach this state
     int action; // action taken to reach this state
     Car* carList; // list of cars in the state
     int carListSize; // size of the list of cars
     int** carMatrix; // matrix of cars in the state
-    char* lastMove; // last move made to reach this state
-    Stack path; // path to reach this state
+    State* parent;
 
     // Constructores
     State();
-    State(int id, int heuristic, int action, Car* carList, int carListSize, int** carMatrix, char* lastMove); // constructor
+    State(int id, int carMoved, int action, Car* carList, int carListSize, int** carMatrix, State* parent); // constructor
     
     // Selectores
     Car* getCarList();
     int** getCarMatrix();
     int getCarListSize();
-    char* getLastMove();
     int getHeuristic();
     int getF();
 
@@ -39,4 +38,5 @@ class State{
     void printRoute(); // prints the state
     bool equals(State* state); // checks if two states are equal
     void printBoard(); // prints the board of the state
+    State* clone(); // clones the state
 };

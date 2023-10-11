@@ -6,18 +6,17 @@ using namespace std;
 Stack::Stack()
 {
     this->height = 0;
-    this->stack = new char*[100];
-    this->capacity = 100;
-};
-
-Stack::~Stack(){
-    delete[] this->stack;
+    this->stack = new char*[10];
+    this->capacity = 10;
+    for(int i = 0; i < this->capacity; i++){
+        this->stack[i] = nullptr;
+    }
 };
 
 void Stack::push(char* string){
     if (this->capacity == this->height){
         char** newStack = new char*[this->capacity*2];
-        for (int i = 0; i < this->capacity; i++){
+        for (int i = 0; i < this->height; i++){
             newStack[i] = this->stack[i];
         }
         delete[] this->stack;

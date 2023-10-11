@@ -6,7 +6,6 @@ public:
     int capacity;
 
     Stack();
-    ~Stack();
     void push(char* state);
     char* pop();
     bool isEmpty();

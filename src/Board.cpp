@@ -230,119 +230,85 @@ State* Board::solve(State *initialState){
     // Se crea el heap para guardar los estados
     MinHeap openHeap = MinHeap(4*initialState->carListSize);
     MinHeap closeHeap = MinHeap(4*initialState->carListSize);
-    openHeap.insert(initialState);
-
+    openHeap.insert(*initialState);
     // Se generan los estados
+    int i = 1;
     while (!openHeap.isEmpty()){
-
-        std::cout << "\nSe genero un estado" << std::endl;
+        std::cout << "-----------------------------" << std::endl;
+        std::cout << "Iteracion: " << i << std::endl;
         // Se obtiene el estado con menor f y se crea un NUEVO estado con el mismo contenido
         State* currentState = openHeap.pop();
-        std::cout << "Estado actual: " << currentState->id << std::endl;
-
-        // Clonamos la lista de autos y la matriz
-        Car* tempCarList = new Car[currentState->carListSize];
-        for(int i=0; i<currentState->carListSize; i++){
-            tempCarList[i] = currentState->carList[i];
-        }
-        int** tempCarMatrix = new int*[this->height];
-        for(int i=0; i<this->height; i++){
-            tempCarMatrix[i] = new int[this->width];
-        }
-        for(int i=0; i<this->height; i++){
-            for(int j=0; j<this->width; j++){
-                tempCarMatrix[i][j] = currentState->carMatrix[i][j];
-            }
-        }
+        std::cout << "Estado seleccionado: " << currentState->id << " con h, g y f: " << currentState->heuristic << currentState->g << currentState->getF() << "\n" << std::endl;
         
-        State* tempCurrentState = new State(currentState->id, currentState->heuristic, -1, tempCarList, this->carListSize, tempCarMatrix, nullptr);
         // Si es solución devuelve el estado solucionado
         if (currentState->isFinalState()){
             std::cout << "Se encontro la solucion" << std::endl;
             return currentState;
         }
-        closeHeap.insert(currentState);
+
+        // Si no, se clona el estado para trabajarlo
+        closeHeap.insert(*currentState);
+
         // Para cada auto generamos los movimientos posibles
         // Recorremos la lista de autos
-        int currentCar;
-        currentCar = 0;
-        for(currentCar; currentCar<tempCurrentState->carListSize; currentCar++){
-            std::cout << "Current car: " << currentCar << std::endl;
+        int currentCar = 0;
+        for(currentCar; currentCar < this->carListSize; currentCar++){
             // Recorremos las 4 direcciones
             for(int j=1; j<=4; j++){
                 // Se crea el auto temporal
-                // Se clonan las coordenadas
-                int* tempCarCoords = new int[2*tempCurrentState->carList[currentCar].getLength()];
-                for(int i=0; i<2*tempCurrentState->carList[currentCar].getLength(); i++){
-                    tempCarCoords[i] = tempCurrentState->carList[currentCar].getCoords()[i];
-                }
-
-                Car* tempCar = new Car(tempCurrentState->carList[currentCar].getId(), tempCarCoords, tempCurrentState->carList[currentCar].getLength(), currentState->carList[currentCar].getDirection());
+                Car* tempCar = currentState->getCarList()[currentCar].clone();
+                
+                // Se guardan sus coordenadas antiguas
                 int* oldCoords = new int[6];
                 for(int i=0; i<2*tempCar->getLength(); i++){
                     oldCoords[i] = tempCar->getCoords()[i];
                 }
-                
-                // Se crea el estado temporal exactamente igual al estado actual
-                // Se clona la lista de autos
-                Car* tempCarList = new Car[tempCurrentState->carListSize];
-                for(int i=0; i<tempCurrentState->carListSize; i++){
-                    tempCarList[i] = tempCurrentState->carList[i];
-                }
-                // Se clona la matriz de autos
-                int** tempCarMatrix = new int*[this->height];
-                for(int i=0; i<this->height; i++){
-                    tempCarMatrix[i] = new int[this->width];
-                }
-                for(int i=0; i<this->height; i++){
-                    for(int j=0; j<this->width; j++){
-                        tempCarMatrix[i][j] = tempCurrentState->carMatrix[i][j];
-                    }
-                }
 
-                State* tempState = new State(StatesGenerated, 1000000, j, tempCarList, this->carListSize, tempCarMatrix, nullptr);
                 // Se verifica si el auto puede moverse en la dirección j
-                if (tempState->verifyCarMove(currentCar, j)){
+                if (currentState->verifyCarMove(currentCar, j)){
+                    // Se crea el estado temporal
+                    State* tempState = currentState->clone();
+
                     // Se calculan las coordenadas de llegada del auto
                     int* newCoords = new int[2*tempCar->getLength()];
+
                     for(int i=0; i<2*tempCar->getLength(); i++){
                         newCoords[i] = tempCar->calcMoveCoords(j)[i];
                     }
-                    //int* newCoords = tempCar->calcMoveCoords(j);
+
                     // Se mueve el auto
                     tempCar->move(newCoords);
                     // Se actualiza la matriz de autos
                     tempState->updateCarMatrix(oldCoords, newCoords, *tempCar);
                     // Se actualiza la lista de autos
                     tempState->setCar(*tempCar);
+                    // Se actualiza el g
                     tempState->g++;
                     // Se calcula la heurística del estado
                     tempState->calculateHeuristic();
-                    // Se agrega el último movimiento
-                    char* lastMove = new char[2];
-                    lastMove[0] = currentCar+'0';
-                    lastMove[1] = j+'0';
-                    tempState->lastMove = lastMove;
-                    tempState->path.push(lastMove);
-                    std::cout << "Moved car: " << currentCar << " move: " << j << std::endl;
+                    tempState->carMoved = currentCar;
+                    tempState->action = j;
+                    // Se agrega el estado temporal al heap
                     if (!closeHeap.includes(tempState)){
                         // Se agrega el estado temporal al heap
-                        openHeap.insert(tempState);
-                        tempState->id = StatesGenerated;
-                        StatesGenerated++;
-                        std::cout << "Se agrego el estado " << tempState->id << " al heap" << std::endl;
-                        tempState->printBoard();
+                        tempState->id = StatesGenerated++;
+                        tempState->parent = currentState;
+                        openHeap.insert(*tempState);
+                        std::cout << "Estado " << tempState->id << " generado con h, g y f:"<< tempState->heuristic <<  tempState->g << tempState->getF() << std::endl;
+                        std::cout << "Moved car: " << currentCar << " move: " << j << std::endl;
+                        //tempState->printBoard();
                         // Se elimina el estado temporal
                         delete tempState;
                     }
                 }
             }
         }
-        std::cout << "Se termino de generar los estados" << std::endl;
+        std::cout << "\nSe termino de generar los estados" << std::endl;
         std::cout << "OpenHeap: " << std::endl;
         openHeap.printHeap();
         std::cout << "CloseHeap: " << std::endl;
         closeHeap.printHeap();
+    i++;
     }
     return nullptr;
 };

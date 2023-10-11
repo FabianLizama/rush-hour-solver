@@ -12,20 +12,21 @@ void MinHeap::setSize(int size){
     this->size = size;
 }
 
-void MinHeap::insert(State* state){
+void MinHeap::insert(State state){
     if(size == capacity){
         capacityDoubler();
     }
 
     if (size == 0){
-        heap[0] = *state;
+        heap[0] = state;
         size++;
         return;
     }
 
-    heap[size] = *state;
+    heap[size] = state;
+    size++;
 
-    int i = size;
+    int i = size-1;
     while (i>0) {
         if (heap[i].getF() < heap[(i-1)/2].getF()){
             State temp = heap[i];
@@ -34,7 +35,6 @@ void MinHeap::insert(State* state){
         }
         i = (i-1)/2;
     }
-    setSize(size+1);
 }
 
 State* MinHeap::pop(){
@@ -43,12 +43,13 @@ State* MinHeap::pop(){
     }
     if (this->size == 1){
         setSize(0);
-        return &heap[0];
+        return heap[0].clone();
     } else if (this->size > 0){
-        State* root = &heap[0];
+        State* root = heap[0].clone();
         heap[0] = heap[size-1];
+        setSize(size-1);
         
-        int i = size;
+        int i = size-1;
         while (i>0) {
             if (heap[i].getF() < heap[(i-1)/2].getF()){
                 State temp = heap[i];
@@ -57,7 +58,6 @@ State* MinHeap::pop(){
             }
             i = (i-1)/2;
         }
-        setSize(size-1);
         return root;
     }
     return nullptr;
@@ -65,7 +65,7 @@ State* MinHeap::pop(){
 
 void MinHeap::capacityDoubler(){
     State* newHeap = new State[capacity*2];
-    for(int i = 0; i < capacity; i++){
+    for(int i = 0; i < this->size; i++){
         newHeap[i] = heap[i];
     }
     delete[] heap;
@@ -74,25 +74,9 @@ void MinHeap::capacityDoubler(){
 }
 
 bool MinHeap::includes(State* state){
-    //std::cout << "Estado a comparar: " << std::endl;
-    int i=0;
-    if (size == 0){
-        return false;
-    } else if (size == 1){
-        return heap[0].equals(state);
-    }
-    //state->printBoard();
-    while (i < size){
-        //std::cout << "Estado en heap: " << std::endl;
-        //heap[i].printBoard();
-        if (heap[i].equals(state)){
+    for (int i = 0; i < size; i++) {
+        if (heap[i].equals(state)) {
             return true;
-        } else if (this->heap[2*i+1].getF() > state->getF()){
-            i = 2*i+2;
-        } else if (this->heap[2*i+2].getF() > state->getF()){
-            i = 2*i+1;
-        } else {
-            return false;
         }
     }
     return false;

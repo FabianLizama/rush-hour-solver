@@ -73,3 +73,12 @@ int* Car::calcMoveCoords(int direction){
     }
     return tempCoords;
 }
+
+Car* Car::clone(){
+    int* newCoords = new int[2*this->length];
+    for(int i=0; i<2*this->length; i++){
+        newCoords[i] = this->coords[i];
+    }
+    Car* newCar = new Car(this->id, newCoords, this->length, this->direction);
+    return newCar;
+}

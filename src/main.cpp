@@ -12,14 +12,14 @@ int main() {
         board.readInputFile("in.txt", "wall1.txt");
         board.printBoard();
 
-        State* initialState = new State(0, 1000000, -1, board.carList, board.carListSize, board.carMatrix, nullptr);
-        
+        State* initialState = new State(0, -1, -1, board.carList, board.carListSize, board.carMatrix, nullptr);
         State* solution = board.solve(initialState);
         if (solution == nullptr){
             cout << "No solution found" << endl;
         } else {
             cout << "Solution found" << endl;
             solution->printBoard();
+            solution->printRoute();
         }
 
     } catch (const std::runtime_error& e) {

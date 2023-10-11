@@ -2,6 +2,7 @@
 #include "../include/Car.h"
 #include "../include/Queue.h"
 #include <iostream>
+#include <cstring>
 
 #define UP 1
 #define LEFT 2
@@ -10,15 +11,16 @@
 
 State::State(){};
 
-State::State(int id, int heuristic, int action, Car* carList, int carListSize, int** carMatrix, char* lastMove){
+State::State(int id, int carMoved, int action, Car* carList, int carListSize, int** carMatrix, State* parent){
     this->id = id;
-    this->heuristic = heuristic; 
+    this->heuristic = 1000000;
+    this->g = 0;
+    this->carMoved = carMoved;
     this->action = action;
     this->carList = carList;
     this->carListSize = carListSize;
     this->carMatrix = carMatrix;
-    this->lastMove = lastMove;
-    this->g = 0;
+    this->parent = parent;
 };
 
 Car* State::getCarList(){
@@ -31,10 +33,6 @@ int** State::getCarMatrix(){
 
 int State::getCarListSize(){
     return this->carListSize;
-};
-
-char* State::getLastMove(){
-    return this->lastMove;
 };
 
 int State::getHeuristic(){
@@ -63,23 +61,11 @@ bool State::isFinalState(){
 };
 
 bool State::verifyCarMove(int carId, int movement){
-    char* string = new char[10];
-    if (movement == UP){
-        string = "UP";
-    } else if (movement == LEFT){
-        string = "LEFT";
-    } else if (movement == DOWN){
-        string = "DOWN";
-    } else if (movement == RIGHT){
-        string = "RIGHT";
-    }
     // Accedemos al auto que queremos verificar
     Car* car = &this->carList[carId];
     if (car->getDirection() == 0 && (movement == UP || movement == DOWN)){
-        std::cout << "Car: " << carId << " move: " << string << " Wrong direction" << std::endl;
         return false;
     } else if (car->getDirection() == 1 && (movement == LEFT || movement == RIGHT)){
-        std::cout << "Car: " << carId << " move: " << string << " Wrong direction" << std::endl;
         return false;
     }
     // Calculamos las coordenadas a las que se movería el auto
@@ -111,12 +97,11 @@ bool State::verifyCarMove(int carId, int movement){
         int currentX = tempCoords[coord*2];
         int currentY = tempCoords[coord*2+1];
         if(currentX < 0 || currentX > 5 || currentY < 0 || currentY > 5){
-            std::cout << "Car: " << carId << " move: " << string << " Out of bounds" << std::endl;
+            std::cout << "Car " << carId << " move out of bounds" << std::endl;
             return false;
         }
         if(this->carMatrix[currentY][currentX] != -1 && this->carMatrix[currentY][currentX] != carId){
-            std::cout << "Hay esto: " << this->carMatrix[currentY][currentX] << std::endl;
-            std::cout << "Car: " << carId << " move: " << string << " Car in the way" << std::endl;
+            std::cout << "Car " << carId << " move out of bounds" << std::endl;
             return false;
         }
     }
@@ -127,7 +112,6 @@ void State::calculateHeuristic(){
     int heuristic;
     // Se obtiene el auto rojo
     Car redCar = this->carList[0];
-
     // Se obtiene la distancia a la salida
     heuristic = 4 - redCar.getCoords()[0];
 
@@ -256,7 +240,36 @@ void State::updateCarMatrix(int* oldCoords, int* newCoords, Car car){
 }
 
 void State::printRoute(){
-    // TO-DO
+    std::cout << "La solución es: " << std::endl;
+    State* currentState = this;
+    Stack* route = new Stack();
+    
+    while (currentState->parent != nullptr){
+        char* movement = new char[3];
+        movement[0] = currentState->carMoved+'0';
+        movement[1] = currentState->action+'0';
+        movement[2] = '\0';
+        route->push(movement);
+        currentState = currentState->parent;
+    }
+
+    int i=1;
+    while (!route->isEmpty()){
+        char* movement = route->pop();
+        char string[10];
+        if (movement[1] == '1')
+            std::strcpy(string, "Arriba");
+        else if (movement[1] == '2')
+            std::strcpy(string, "Izquierda");
+        else if (movement[1] == '3')
+            strcpy(string, "Abajo");
+        else if (movement[1] == '4')
+            std::strcpy(string, "Derecha");
+
+        std::cout << i << ". Auto: " << movement[0] << " Movement: " << string << std::endl;
+        i++;
+    }
+
 }
 
 bool State::equals(State* state){
@@ -281,4 +294,27 @@ void State::printBoard(){
         std::cout << std::endl;
     }
     std::cout << std::endl;
+}
+
+State* State::clone(){
+    // Se clona la lista de autos
+    Car* newCarList = new Car[this->carListSize];
+    for(int i=0;i<this->carListSize;i++){
+        newCarList[i] = this->carList[i];
+    }
+
+    // Se clona la matriz
+    int** newCarMatrix = new int*[6];
+    for(int i=0;i<6;i++){
+        newCarMatrix[i] = new int[6];
+        for(int j=0;j<6;j++){
+            newCarMatrix[i][j] = this->carMatrix[i][j];
+        }
+    }
+
+    State* newState = new State(this->id, this->carMoved, this->action, newCarList, this->carListSize, newCarMatrix, this->parent);
+    newState->g = this->g;
+    newState->heuristic = this->heuristic;
+
+    return newState;
 }
