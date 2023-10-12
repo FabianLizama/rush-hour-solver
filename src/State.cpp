@@ -1,6 +1,5 @@
 #include "../include/State.h"
 #include "../include/Car.h"
-#include "../include/Queue.h"
 #include <iostream>
 #include <cstring>
 
@@ -240,7 +239,7 @@ void State::updateCarMatrix(int* oldCoords, int* newCoords, Car car){
 }
 
 void State::printRoute(){
-    std::cout << "La solución es: " << std::endl;
+    std::cout << "\nLa solución es: " << std::endl;
     State* currentState = this;
     Stack* route = new Stack();
     
@@ -266,7 +265,7 @@ void State::printRoute(){
         else if (movement[1] == '4')
             std::strcpy(string, "Derecha");
 
-        std::cout << i << ". Auto: " << movement[0] << " Movement: " << string << std::endl;
+        std::cout << i << ". Auto: " << char(int(movement[0])+17) << " Movement: " << string << std::endl;
         i++;
     }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Car.h"
 #include "State.h"
+#include <string>
 
 class Board{
     public:

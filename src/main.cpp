@@ -25,21 +25,21 @@ int main() {
         auto start = std::chrono::high_resolution_clock::now();
 
         State* initialState = new State(0, -1, -1, board.carList, board.carListSize, board.carMatrix, nullptr);
-        initialState->printBoard();
-        
         State* solution = board.solve(initialState);
+
         if (solution == nullptr){
-            cout << "Solution not found" << endl;
+            cout << "Solucion no encontrada" << endl;
         } else {
-            cout << "Solution found" << endl;
+            cout << "Solucion encontrada" << endl;
             solution->printRoute();
+            std::cout << "El tablero final es el siguiente: " << std::endl;
             board.carMatrix = solution->getCarMatrix();
             board.carList = solution->getCarList();
             board.printBoard();
         }
         auto finish = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = finish - start; 
-        std::cout << "Elapsed time: " << elapsed.count() << " s\n";
+        std::cout << "Tiempo de ejecucion: " << elapsed.count() << " s\n";
 
     } catch (const std::runtime_error& e) {
         std::cout << e.what() << std::endl;
