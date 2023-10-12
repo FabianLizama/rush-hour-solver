@@ -97,11 +97,11 @@ bool State::verifyCarMove(int carId, int movement){
         int currentX = tempCoords[coord*2];
         int currentY = tempCoords[coord*2+1];
         if(currentX < 0 || currentX > 5 || currentY < 0 || currentY > 5){
-            std::cout << "Car " << carId << " move out of bounds" << std::endl;
+            //std::cout << "Car " << carId << " move out of bounds" << std::endl;
             return false;
         }
         if(this->carMatrix[currentY][currentX] != -1 && this->carMatrix[currentY][currentX] != carId){
-            std::cout << "Car " << carId << " move out of bounds" << std::endl;
+            //std::cout << "Car " << carId << " move out of bounds" << std::endl;
             return false;
         }
     }

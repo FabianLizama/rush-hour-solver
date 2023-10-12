@@ -11,10 +11,13 @@ using namespace std;
 Board::Board(){
     // El máximo de autos posibles para un tablero de 6x6 pueden ser 18
     this->carList = new Car[18];
+    // Se asigna memoria para la lista de autos
+    this->width = 6;
+    this->height = 6;
     this->carListSize = 0;
-    this->carMatrix = new int*[this->height];
+    this->carMatrix = new int*[6];
     for(int i = 0; i < this->height; i++){
-        this->carMatrix[i] = new int[this->width];
+        this->carMatrix[i] = new int[6];
     }
 };
 
@@ -30,7 +33,7 @@ void Board::readInputFile(std::string filename, std::string wallFilename){
 
     // Se comprueba que el archivo se abrió correctamente
     if (!file.is_open()){
-        std::cout << "No se pudo abrir el archivo " << filename << std::endl;
+        //std::cout << "No se pudo abrir el archivo " << filename << std::endl;
         throw std::runtime_error("Error al abrir el archivo");
     }
     std::string line;
@@ -39,9 +42,11 @@ void Board::readInputFile(std::string filename, std::string wallFilename){
     int counter = 1;
     bool redCarFound=false;
     while (std::getline(file, line)){
+        //std::cout << "Leyendo auto " << counter << std::endl;
+
         bool thisIsRedCar=false;
-        int x0 = line[0]-'0';
-        int y0 = line[2]-'0';
+        int x0 = line[2]-'0';
+        int y0 = line[0]-'0';
         int length = line[4]-'0';
         int direction = line[6]-'0';
         int* coords;
@@ -52,9 +57,9 @@ void Board::readInputFile(std::string filename, std::string wallFilename){
         }
         // Pares son x e impares son y
         // X_1
-        coords[0] = line[0] - '0';
+        coords[0] = line[2] - '0';
         // Y_1
-        coords[1] = line[2] - '0';
+        coords[1] = line[0] - '0';
 
         // Se lee una línea del archivo y se crea el auto correspondiente
         // Si es horizontal
@@ -71,10 +76,12 @@ void Board::readInputFile(std::string filename, std::string wallFilename){
             }
             // Se comprueba si es el auto rojo
             if(!redCarFound && (y0==2)){
+                    //std::cout << "Red car found" << std::endl;
                     redCarFound=true;
                     thisIsRedCar=true;
                     Car* car = new Car(0, coords, length, direction);
                     this->addCar(car);
+                    //std::cout << "Leído correctamente auto: " << car->getId() << " con coordenadas: " << car->getCoords()[0] << " " << car->getCoords()[1] << std::endl;
             }
         // Si es vertical
         } else if (direction==1){
@@ -92,6 +99,7 @@ void Board::readInputFile(std::string filename, std::string wallFilename){
         if (!thisIsRedCar){
             Car* car = new Car(counter, coords, length, direction);
             this->addCar(car);
+            //std::cout << "Leído correctamente auto: " << car->getId() << " con coordenadas: " << car->getCoords()[0] << " " << car->getCoords()[1] << std::endl;
             counter++;
         }
     }
@@ -140,17 +148,16 @@ void Board::readInputFile(std::string filename, std::string wallFilename){
             this->carMatrix[currentY][currentX] = this->carList[currentCar].getId();
         }
     }
-
     std::ifstream wallFile(wallFilename);
     // Se comprueba que el archivo se abrió correctamente
     if (!wallFile.is_open()){
-        std::cout << "No se pudo abrir el archivo " << wallFilename << std::endl;
+        //std::cout << "No se pudo abrir el archivo " << wallFilename << std::endl;
         throw std::runtime_error("Error al abrir el archivo");
     }
-    // Se lee el archivo línea por línea y se crean los autos
+    // Se lee el archivo línea por línea y se crean los muros
     while (std::getline(wallFile, line)){
-        int x0 = line[0]-'0';
-        int y0 = line[2]-'0';
+        int y0 = line[0]-'0';
+        int x0 = line[2]-'0';
         
         this->carMatrix[y0][x0] = -2;
     }
@@ -234,15 +241,15 @@ State* Board::solve(State *initialState){
     // Se generan los estados
     int i = 1;
     while (!openHeap.isEmpty()){
-        std::cout << "-----------------------------" << std::endl;
-        std::cout << "Iteracion: " << i << std::endl;
+        //std::cout << "-----------------------------" << std::endl;
+        //std::cout << "Iteracion: " << i << std::endl;
         // Se obtiene el estado con menor f y se crea un NUEVO estado con el mismo contenido
         State* currentState = openHeap.pop();
-        std::cout << "Estado seleccionado: " << currentState->id << " con h, g y f: " << currentState->heuristic << currentState->g << currentState->getF() << "\n" << std::endl;
+        //std::cout << "Estado seleccionado: " << currentState->id << " con h, g y f: " << currentState->heuristic << currentState->g << currentState->getF() << "\n" << std::endl;
         
         // Si es solución devuelve el estado solucionado
         if (currentState->isFinalState()){
-            std::cout << "Se encontro la solucion" << std::endl;
+            //std::cout << "Se encontro la solucion" << std::endl;
             return currentState;
         }
 
@@ -294,8 +301,8 @@ State* Board::solve(State *initialState){
                         tempState->id = StatesGenerated++;
                         tempState->parent = currentState;
                         openHeap.insert(*tempState);
-                        std::cout << "Estado " << tempState->id << " generado con h, g y f:"<< tempState->heuristic <<  tempState->g << tempState->getF() << std::endl;
-                        std::cout << "Moved car: " << currentCar << " move: " << j << std::endl;
+                        //std::cout << "Estado " << tempState->id << " generado con h, g y f:"<< tempState->heuristic <<  tempState->g << tempState->getF() << std::endl;
+                        //std::cout << "Moved car: " << currentCar << " move: " << j << std::endl;
                         //tempState->printBoard();
                         // Se elimina el estado temporal
                         delete tempState;
@@ -303,11 +310,11 @@ State* Board::solve(State *initialState){
                 }
             }
         }
-        std::cout << "\nSe termino de generar los estados" << std::endl;
-        std::cout << "OpenHeap: " << std::endl;
-        openHeap.printHeap();
-        std::cout << "CloseHeap: " << std::endl;
-        closeHeap.printHeap();
+        //std::cout << "\nSe termino de generar los estados" << std::endl;
+        //std::cout << "OpenHeap: " << std::endl;
+        //openHeap.printHeap();
+        //std::cout << "CloseHeap: " << std::endl;
+        //closeHeap.printHeap();
     i++;
     }
     return nullptr;
