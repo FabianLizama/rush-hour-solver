@@ -1,6 +1,0 @@
-[X] - Muros
-[] - A*
-[X] - Heurística
-[X] - Leer auto rojo
-[X] - Más de 9 autos
-[] - Print-route
